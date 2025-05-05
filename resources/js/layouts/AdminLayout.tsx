@@ -46,7 +46,7 @@ export default function AdminLayout({ children, user }: Props) {
     },
     {
       name: 'Customers',
-      href: route('admin.customers.index'),
+      href: route('admin.dashboard'),
       icon: Users,
     },
   ];
@@ -115,7 +115,7 @@ export default function AdminLayout({ children, user }: Props) {
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={route('admin.settings')}>
+                    <Link href={route('profile.edit')}>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </Link>

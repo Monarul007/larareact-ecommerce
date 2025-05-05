@@ -26,7 +26,7 @@ export default function DashboardLayout({ children, user }: Props) {
     },
     {
       name: 'Account Overview',
-      href: route('account.overview'),
+      href: route('profile.edit'),
       icon: User
     },
     {
@@ -36,22 +36,22 @@ export default function DashboardLayout({ children, user }: Props) {
     },
     {
       name: 'Wishlist',
-      href: route('account.wishlist'),
+      href: route('profile.edit'),
       icon: Heart
     },
     {
       name: 'Invoices',
-      href: route('account.invoices'),
+      href: route('orders.index'),
       icon: FileText
     },
     {
       name: 'Addresses',
-      href: route('settings.addresses'),
+      href: route('addresses.index'),
       icon: MapPin
     },
     {
       name: 'Notifications',
-      href: route('settings.notifications'),
+      href: route('addresses.index'),
       icon: Bell
     },
     {

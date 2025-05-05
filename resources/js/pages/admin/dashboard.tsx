@@ -1,6 +1,7 @@
 import React from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   DollarSign,
   ShoppingBag,
@@ -8,6 +9,19 @@ import {
   Package,
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import AdminLayout from '@/layouts/AdminLayout';
+import { type OrderStatus } from '@/types/order';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
+
+interface PageProps extends InertiaPageProps {
+  auth: {
+    user: {
+      name: string;
+      email: string;
+      avatar?: string;
+    };
+  };
+}
 
 interface DashboardMetrics {
   totalRevenue: number;
@@ -24,7 +38,7 @@ interface DashboardMetrics {
     id: number;
     customer: string;
     total: number;
-    status: string;
+    status: OrderStatus;
     created_at: string;
   }>;
   topProducts: Array<{
@@ -40,8 +54,25 @@ interface Props {
 }
 
 export default function Dashboard({ metrics }: Props) {
+  const { auth } = usePage<PageProps>().props;
+
+  const getStatusVariant = (status: OrderStatus): "default" | "destructive" | "outline" | "secondary" => {
+    switch (status) {
+      case 'delivered':
+        return 'default';
+      case 'shipped':
+        return 'default';
+      case 'processing':
+        return 'secondary';
+      case 'pending':
+        return 'outline';
+      case 'cancelled':
+        return 'destructive';
+    }
+  };
+
   return (
-    <>
+    <AdminLayout user={auth.user}>
       <Head title="Admin Dashboard" />
       
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -163,6 +194,12 @@ export default function Dashboard({ metrics }: Props) {
                       <p className="text-sm text-muted-foreground">
                         {order.customer}
                       </p>
+                      <Badge 
+                        variant={getStatusVariant(order.status)}
+                        className="mt-1"
+                      >
+                        {order.status}
+                      </Badge>
                     </div>
                     <div className="text-right">
                       <p className="font-medium">
@@ -203,6 +240,6 @@ export default function Dashboard({ metrics }: Props) {
           </Card>
         </div>
       </div>
-    </>
+    </AdminLayout>
   );
 }

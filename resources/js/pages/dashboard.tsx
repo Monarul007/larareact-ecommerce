@@ -1,15 +1,27 @@
 import React from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingBag, Package, Clock, ArrowRight } from 'lucide-react';
+import { type OrderStatus } from '@/types/order';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
+
+interface PageProps extends InertiaPageProps {
+  auth: {
+    user: {
+      name: string;
+      email: string;
+      avatar?: string;
+    };
+  };
+}
 
 interface Order {
   id: number;
   total: number;
-  status: string;
+  status: OrderStatus;
   created_at: string;
   items: Array<{
     product: {
@@ -20,11 +32,6 @@ interface Order {
 }
 
 interface Props {
-  user: {
-    name: string;
-    email: string;
-    avatar?: string;
-  };
   recentOrders: Order[];
   stats: {
     totalOrders: number;
@@ -33,7 +40,25 @@ interface Props {
   };
 }
 
-export default function Dashboard({ user, recentOrders, stats }: Props) {
+export default function Dashboard({ recentOrders, stats }: Props) {
+  const { auth } = usePage<PageProps>().props;
+  const user = auth.user;
+
+  const getStatusVariant = (status: OrderStatus): "default" | "destructive" | "outline" | "secondary" => {
+    switch (status) {
+      case 'delivered':
+        return 'default';
+      case 'shipped':
+        return 'default';
+      case 'processing':
+        return 'secondary';
+      case 'pending':
+        return 'outline';
+      case 'cancelled':
+        return 'destructive';
+    }
+  };
+
   return (
     <DashboardLayout user={user}>
       <Head title="Dashboard" />
@@ -150,13 +175,7 @@ export default function Dashboard({ user, recentOrders, stats }: Props) {
                         ${order.total.toFixed(2)}
                       </p>
                       <Badge 
-                        variant={
-                          order.status === 'completed' 
-                            ? 'default'
-                            : order.status === 'pending'
-                            ? 'secondary'
-                            : 'outline'
-                        }
+                        variant={getStatusVariant(order.status)}
                         className="mt-1"
                       >
                         {order.status}

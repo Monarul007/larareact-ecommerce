@@ -5,25 +5,38 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useForm } from '@inertiajs/react';
-import { 
-  Package,
-  Search,
-  Mail,
-} from 'lucide-react';
+import { Package, Search, Mail } from 'lucide-react';
 
-export default function TrackOrder() {
+interface Props {
+  categories: Array<{
+    id: number;
+    name: string;
+    slug: string;
+    children: Array<{
+      id: number;
+      name: string;
+      slug: string;
+    }>;
+  }>;
+  errors?: {
+    order_number?: string;
+    email?: string;
+  };
+}
+
+export default function TrackOrder({ categories, errors }: Props) {
   const { data, setData, post, processing } = useForm({
-    orderNumber: '',
+    order_number: '',
     email: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
+    post(route('order.track'));
   };
 
   return (
-    <MainLayout>
+    <MainLayout categories={categories}>
       <Head title="Track Order" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -48,11 +61,14 @@ export default function TrackOrder() {
                     <Input
                       id="orderNumber"
                       placeholder="Enter your order number"
-                      value={data.orderNumber}
-                      onChange={e => setData('orderNumber', e.target.value)}
-                      className="pl-10"
+                      value={data.order_number}
+                      onChange={e => setData('order_number', e.target.value)}
+                      className={`pl-10 ${errors?.order_number ? 'border-destructive' : ''}`}
                     />
                   </div>
+                  {errors?.order_number && (
+                    <p className="mt-1 text-sm text-destructive">{errors.order_number}</p>
+                  )}
                 </div>
 
                 <div>
@@ -67,9 +83,12 @@ export default function TrackOrder() {
                       placeholder="Enter your email address"
                       value={data.email}
                       onChange={e => setData('email', e.target.value)}
-                      className="pl-10"
+                      className={`pl-10 ${errors?.email ? 'border-destructive' : ''}`}
                     />
                   </div>
+                  {errors?.email && (
+                    <p className="mt-1 text-sm text-destructive">{errors.email}</p>
+                  )}
                 </div>
 
                 <Button type="submit" className="w-full" disabled={processing}>

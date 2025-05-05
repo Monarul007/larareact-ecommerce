@@ -43,8 +43,8 @@ export function Footer() {
     company: [
       { name: 'About Us', href: route('about') },
       { name: 'Contact', href: route('contact') },
-      { name: 'Careers', href: route('careers') },
-      { name: 'Blog', href: route('blog') },
+      { name: 'Careers', href: '#' },
+      { name: 'Blog', href: '#' },
     ],
     support: [
       { name: 'Shipping', href: route('shipping') },
@@ -55,7 +55,7 @@ export function Footer() {
     legal: [
       { name: 'Terms of Service', href: route('terms') },
       { name: 'Privacy Policy', href: route('privacy') },
-      { name: 'Cookie Policy', href: route('cookies') },
+      { name: 'Cookie Policy', href: '#' },
     ],
     social: [
       {
