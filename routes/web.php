@@ -14,6 +14,7 @@ use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\Settings\AddressController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Api\CartController;
 
 // Public/Guest routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -38,6 +39,15 @@ Route::get('/brands/{brand:slug}', [BrandController::class, 'show'])->name('bran
 // Guest checkout and order tracking
 Route::get('/checkout/guest', [CheckoutController::class, 'guest'])->name('checkout.guest');
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+
+// Cart routes
+Route::prefix('cart')->group(function () {
+    Route::get('/', [CartController::class, 'show']);
+    Route::post('/add', [CartController::class, 'add']);
+    Route::delete('/{id}', [CartController::class, 'remove']);
+    Route::patch('/{id}', [CartController::class, 'update']);
+    Route::delete('/', [CartController::class, 'clear']);
+});
 
 // Static pages
 Route::get('/about', [StaticPageController::class, 'about'])->name('about');

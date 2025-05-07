@@ -78,11 +78,13 @@ export default function Checkout() {
                     <div>
                       <p className="font-medium">{item.product.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {item.name} × {item.quantity}
+                        {Object.entries(item.variation.attributes)
+                          .map(([key, value]) => `${key}: ${value}`)
+                          .join(', ')} × {item.quantity}
                       </p>
                     </div>
                     <p className="font-medium">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ${(item.variation.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 ))}

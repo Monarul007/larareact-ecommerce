@@ -21,7 +21,7 @@ import {
 import { Product, ProductVariation } from '@/types';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
-import { cartService } from '@/services/cartService';
+import { useCart } from '@/hooks/useCart';
 
 interface Category {
   id: number;
@@ -44,6 +44,7 @@ export default function Show({ user, categories, product }: Props) {
   
   const [selectedVariation, setSelectedVariation] = useState<ProductVariation | null>(null);
   const { toast } = useToast();
+  const { addItem } = useCart();
 
   const variations = product.variations || [];
 
@@ -57,11 +58,7 @@ export default function Show({ user, categories, product }: Props) {
     }
 
     try {
-      await cartService.addToCart({
-        variation_id: selectedVariation.id,
-        quantity: 1
-      });
-      
+      await addItem(selectedVariation.id, 1);
       toast({
         title: "Added to cart",
         description: `${product.name} - ${selectedVariation.name} added to cart`
