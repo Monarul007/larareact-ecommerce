@@ -1,5 +1,5 @@
-import React from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import React, { useEffect } from 'react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { useCart } from '@/hooks/useCart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { MainLayout } from '@/layouts/MainLayout';
 
 interface CheckoutForm {
   name: string;
@@ -23,10 +24,11 @@ interface CheckoutForm {
 }
 
 export default function Checkout() {
-  const { items, total, clearCart } = useCart();
+  const { user } = usePage().props.auth;
+  const { items, total, clearCart, fetchCart } = useCart();
   const { data, setData, post, processing, errors } = useForm<CheckoutForm>({
-    name: '',
-    email: '',
+    name: user.name,
+    email: user.email,
     address: '',
     city: '',
     state: '',
@@ -37,8 +39,29 @@ export default function Checkout() {
     card_cvc: '',
   });
 
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setData({
+      name: data.name,
+      email: data.email,
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      postal_code: data.postal_code,
+      country: data.country,
+      items: items.map(item => ({
+        product: item.product,
+        name: item.product.name,
+        quantity: item.quantity,
+        price: item.variation.price,
+        variation: item.variation,
+      })),
+      total: total,
+    });
     post(route('checkout.process'), {
       onSuccess: () => {
         clearCart();
@@ -48,7 +71,7 @@ export default function Checkout() {
 
   if (items.length === 0) {
     return (
-      <>
+      <MainLayout>
         <Head title="Checkout" />
         <div className="max-w-3xl mx-auto py-12 px-4">
           <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
@@ -56,12 +79,12 @@ export default function Checkout() {
             <a href={route('products.index')}>Continue Shopping</a>
           </Button>
         </div>
-      </>
+      </MainLayout>
     );
   }
 
   return (
-    <>
+    <MainLayout>
       <Head title="Checkout" />
       
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -74,7 +97,7 @@ export default function Checkout() {
             <CardContent>
               <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex justify-between">
+                  <div key={item.variation.id} className="flex justify-between">
                     <div>
                       <p className="font-medium">{item.product.name}</p>
                       <p className="text-sm text-muted-foreground">
@@ -239,6 +262,6 @@ export default function Checkout() {
           </form>
         </div>
       </div>
-    </>
+    </MainLayout>
   );
 }

@@ -1,38 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import CartItem from '@/components/cart/CartItem';
 import CartSummary from '@/components/cart/CartSummary';
 import { Button } from '@/components/ui/button';
 import { Link } from '@inertiajs/react';
+import { MainLayout } from '@/layouts/MainLayout';
+import { useCart } from '@/hooks/useCart';
 
-interface CartPageProps {
-  items: Array<{
-    id: number;
-    product: {
-      name: string;
-      image: string;
-      slug: string;
-    };
-    variation: {
-      price: number;
-      attributes: Record<string, string>;
-    };
-    quantity: number;
-  }>;
-  shipping: number;
-  tax: number;
-}
+export default function CartPage() {
+  const { items, total, fetchCart } = useCart();
 
-export default function CartPage({ items, shipping, tax }: CartPageProps) {
-  const subtotal = items.reduce((sum, item) => sum + (item.variation.price * item.quantity), 0);
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   return (
-    <>
+    <MainLayout>
       <Head title="Shopping Cart" />
-      
-      <div className="container py-8">
+      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
-        
         {items.length > 0 ? (
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-8">
@@ -44,15 +30,13 @@ export default function CartPage({ items, shipping, tax }: CartPageProps) {
                 ))}
               </div>
             </div>
-            
             <div className="lg:col-span-4">
               <div className="bg-card rounded-lg shadow-sm p-6 space-y-6 sticky top-4">
                 <CartSummary
-                  subtotal={subtotal}
-                  shipping={shipping}
-                  tax={tax}
+                  subtotal={total}
+                  shipping={0}
+                  tax={0}
                 />
-                
                 <Button asChild className="w-full" size="lg">
                   <Link href="/checkout">Proceed to Checkout</Link>
                 </Button>
@@ -71,6 +55,6 @@ export default function CartPage({ items, shipping, tax }: CartPageProps) {
           </div>
         )}
       </div>
-    </>
+    </MainLayout>
   );
 }

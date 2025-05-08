@@ -19,8 +19,6 @@ export function Cart() {
   const { items, total, removeItem, updateQuantity, isLoading, error, fetchCart } = useCart();
   const { toast } = useToast();
 
-  console.log('Cart items:', items);
-
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
@@ -118,7 +116,7 @@ export function Cart() {
             <ScrollArea className="flex-1">
               <div className="space-y-4 py-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex items-start gap-4">
+                  <div key={item.variation.id} className="flex items-start gap-4">
                     <div className="h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
                       <img
                         src={item.product.image || '/placeholder.png'}
@@ -135,7 +133,7 @@ export function Cart() {
                       </p>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleUpdateQuantity(item.id, item.quantity - 1, item.variation.stock)}
+                          onClick={() => handleUpdateQuantity(item.variation.id, item.quantity - 1, item.variation.stock)}
                           className="h-6 w-6 rounded border flex items-center justify-center hover:bg-accent disabled:opacity-50"
                           disabled={isLoading || item.quantity <= 1}
                         >
@@ -145,7 +143,7 @@ export function Cart() {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => handleUpdateQuantity(item.id, item.quantity + 1, item.variation.stock)}
+                          onClick={() => handleUpdateQuantity(item.variation.id, item.quantity + 1, item.variation.stock)}
                           className="h-6 w-6 rounded border flex items-center justify-center hover:bg-accent disabled:opacity-50"
                           disabled={isLoading || item.quantity >= item.variation.stock}
                         >

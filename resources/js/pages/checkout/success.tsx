@@ -1,20 +1,23 @@
 import React from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle } from 'lucide-react';
+import DashboardLayout from '@/layouts/DashboardLayout';
 
 interface Props {
   order: {
     id: number;
-    total: number;
+    total_amount: number;
     created_at: string;
   };
 }
 
 export default function Success({ order }: Props) {
+  console.log(order);
+  const { user } = usePage().props.auth;
   return (
-    <>
+    <DashboardLayout user={user}>
       <Head title="Order Successful" />
       
       <div className="max-w-3xl mx-auto py-12 px-4">
@@ -27,7 +30,7 @@ export default function Success({ order }: Props) {
           
           <div className="space-y-4 mb-8">
             <p className="text-lg">
-              Order Total: <span className="font-bold">${order.total.toFixed(2)}</span>
+              Order Total: <span className="font-bold">${order.total_amount.toFixed(2)}</span>
             </p>
             <p className="text-sm text-muted-foreground">
               Placed on {new Date(order.created_at).toLocaleDateString()}
@@ -44,6 +47,6 @@ export default function Success({ order }: Props) {
           </div>
         </Card>
       </div>
-    </>
+    </DashboardLayout>
   );
 }

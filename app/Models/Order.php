@@ -37,4 +37,15 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    /**
+     * Stub for tracking relationship to prevent errors.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tracking()
+    {
+        // Return an empty collection to avoid errors if OrderTracking does not exist
+        return collect();
+    }
 }

@@ -23,16 +23,17 @@ export default function Notifications({ user, notification_settings }: Props) {
   return (
     <DashboardLayout user={user}>
       <Head title="Notification Settings" />
+      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-bold">Notification Settings</h1>
+            <p className="text-muted-foreground">
+              Manage your email notification preferences
+            </p>
+          </div>
 
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Notification Settings</h1>
-          <p className="text-muted-foreground">
-            Manage your email notification preferences
-          </p>
+          <NotificationPreferences settings={notification_settings} />
         </div>
-
-        <NotificationPreferences settings={notification_settings} />
       </div>
     </DashboardLayout>
   );

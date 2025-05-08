@@ -39,15 +39,19 @@ Route::get('/brands/{brand:slug}', [BrandController::class, 'show'])->name('bran
 // Guest checkout and order tracking
 Route::get('/checkout/guest', [CheckoutController::class, 'guest'])->name('checkout.guest');
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Cart routes
 Route::prefix('cart')->group(function () {
-    Route::get('/', [CartController::class, 'show']);
+    Route::get('/api', [CartController::class, 'show']);
     Route::post('/add', [CartController::class, 'add']);
     Route::delete('/{id}', [CartController::class, 'remove']);
     Route::patch('/{id}', [CartController::class, 'update']);
     Route::delete('/', [CartController::class, 'clear']);
 });
+
+// Cart page (web)
+Route::get('/cart', [\App\Http\Controllers\Api\CartController::class, 'page'])->name('cart.page');
 
 // Static pages
 Route::get('/about', [StaticPageController::class, 'about'])->name('about');
@@ -61,9 +65,7 @@ Route::get('/privacy', [StaticPageController::class, 'privacy'])->name('privacy'
 
 // Customer routes
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\CustomerController::class, 'dashboard'])->name('dashboard');
     
     // Order management
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
@@ -77,6 +79,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/settings/addresses', [AddressController::class, 'store'])->name('addresses.store');
     Route::put('/settings/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
     Route::delete('/settings/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
+
+    Route::get('/orders/{order}/invoice', [\App\Http\Controllers\OrderController::class, 'downloadInvoice'])->name('orders.invoice');
 });
 
 // Admin routes

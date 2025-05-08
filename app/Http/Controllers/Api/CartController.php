@@ -7,6 +7,7 @@ use App\Models\ProductVariation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Inertia\Inertia;
 
 class CartController extends Controller
 {
@@ -114,6 +115,28 @@ class CartController extends Controller
         return response()->json([
             'message' => 'Cart cleared',
             'cart' => []
+        ]);
+    }
+
+    /**
+     * Render the cart page for web users.
+     */
+    public function page()
+    {
+        $cart = session('cart', []);
+        $items = collect($cart)->map(function ($item, $id) {
+            return [
+                'id' => $id,
+                'product' => $item['product'],
+                'variation' => $item['variation'],
+                'quantity' => $item['quantity'],
+            ];
+        })->values()->toArray();
+        // You can add shipping/tax logic here if needed
+        return Inertia::render('cart/index', [
+            'items' => $items,
+            'shipping' => 0,
+            'tax' => 0,
         ]);
     }
 }

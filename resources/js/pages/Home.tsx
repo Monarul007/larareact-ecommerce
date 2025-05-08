@@ -39,20 +39,14 @@ interface Category {
 }
 
 interface Props {
-  user?: {
-    name: string;
-    email: string;
-    avatar?: string;
-  };
-  categories: Category[];
   featuredProducts: Product[];
   newArrivals: Product[];
   topCategories: Category[];
 }
 
-export default function Home({ user, categories, featuredProducts, newArrivals, topCategories }: Props) {
+export default function Home({ featuredProducts, newArrivals, topCategories }: Props) {
   return (
-    <MainLayout user={user} categories={categories}>
+    <MainLayout>
       <Head title="Welcome" />
 
       {/* Hero Section */}

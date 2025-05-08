@@ -29,31 +29,57 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Validate cart items and checkout data
+        // Validate checkout data (do not store card info)
         $validated = $request->validate([
-            'billing_name' => 'required|string',
-            'billing_email' => 'required|email',
-            'billing_address' => 'required|string',
-            'billing_city' => 'required|string',
-            'billing_country' => 'required|string',
-            'billing_postcode' => 'required|string',
-            'shipping_name' => 'required|string',
-            'shipping_address' => 'required|string',
-            'shipping_city' => 'required|string',
-            'shipping_country' => 'required|string',
-            'shipping_postcode' => 'required|string',
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'address' => 'required|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'postal_code' => 'required|string',
+            'country' => 'required|string',
             'items' => 'required|array',
-            'total_amount' => 'required|numeric|min:0'
+            'total' => 'required|numeric|min:0',
         ]);
 
-        // Process payment here...
+        // Map form fields to order fields
+        $orderData = [
+            'billing_name' => $validated['name'],
+            'billing_email' => $validated['email'],
+            'billing_address' => $validated['address'],
+            'billing_city' => $validated['city'],
+            'billing_country' => $validated['country'],
+            'billing_postcode' => $validated['postal_code'],
+            'shipping_name' => $validated['name'],
+            'shipping_address' => $validated['address'],
+            'shipping_city' => $validated['city'],
+            'shipping_country' => $validated['country'],
+            'shipping_postcode' => $validated['postal_code'],
+            'total_amount' => $validated['total'],
+            'status' => 'pending',
+        ];
 
-        // Create order
-        $order = auth()->check() 
-            ? auth()->user()->orders()->create($validated)
-            : Order::create($validated);
+        if (auth()->check()) {
+            $orderData['user_id'] = auth()->id();
+        }
 
-        return redirect()->route('checkout.success', ['order' => $order->id]);
+        $order = \App\Models\Order::create($orderData);
+
+        // Save order items
+        foreach ($validated['items'] as $item) {
+            \App\Models\OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item['product']['id'] ?? null,
+                'name' => $item['product']['name'] ?? $item['name'],
+                'quantity' => $item['quantity'],
+                'price' => $item['variation']['price'] ?? $item['price'],
+            ]);
+        }
+
+        // Optionally: clear cart here
+        session()->forget('cart');
+
+        return Inertia::render('checkout/success', ['order' => $order])->with('success', 'Order placed successfully.');
     }
 
     public function success(Request $request): Response

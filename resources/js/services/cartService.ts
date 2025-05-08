@@ -38,7 +38,7 @@ export const cartService = {
 
     getCart: async () => {
         try {
-            const response = await axios.get('/cart');
+            const response = await axios.get('/cart/api');
             return response.data;
         } catch (error) {
             console.error('Error fetching cart:', error);

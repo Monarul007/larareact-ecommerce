@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import { router } from '@inertiajs/react';
+import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MinusIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -22,17 +22,13 @@ interface CartItemProps {
 }
 
 export default function CartItem({ item }: CartItemProps) {
-  const updateQuantity = (newQuantity: number) => {
+  const { updateQuantity, removeItem } = useCart();
+  const handleUpdateQuantity = (newQuantity: number) => {
     if (newQuantity < 1) return;
-    
-    router.post(`/cart/${item.id}`, {
-      _method: 'PATCH',
-      quantity: newQuantity,
-    });
+    updateQuantity(item.id, newQuantity);
   };
-
-  const removeItem = () => {
-    router.delete(`/cart/${item.id}`);
+  const handleRemoveItem = () => {
+    removeItem(item.id);
   };
 
   const formatAttributes = (attributes: Record<string, string>) => {
@@ -45,8 +41,8 @@ export default function CartItem({ item }: CartItemProps) {
     <div className="flex gap-4 py-4">
       <Link href={`/products/${item.product.slug}`} className="shrink-0">
         <img
-          src={item.product.image}
-          alt={item.product.name}
+          src={item.product.image || '/placeholder.png'}
+          alt={item.product.name || 'Product Image'}
           className="w-24 h-24 object-cover rounded-md"
         />
       </Link>
@@ -68,7 +64,7 @@ export default function CartItem({ item }: CartItemProps) {
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={() => updateQuantity(item.quantity - 1)}
+            onClick={() => handleUpdateQuantity(item.quantity - 1)}
           >
             <MinusIcon className="h-4 w-4" />
           </Button>
@@ -76,7 +72,7 @@ export default function CartItem({ item }: CartItemProps) {
           <Input
             type="number"
             value={item.quantity}
-            onChange={(e) => updateQuantity(parseInt(e.target.value) || 1)}
+            onChange={(e) => handleUpdateQuantity(parseInt(e.target.value) || 1)}
             className="w-16 h-8 text-center"
             min="1"
           />
@@ -85,7 +81,7 @@ export default function CartItem({ item }: CartItemProps) {
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={() => updateQuantity(item.quantity + 1)}
+            onClick={() => handleUpdateQuantity(item.quantity + 1)}
           >
             <PlusIcon className="h-4 w-4" />
           </Button>
@@ -101,7 +97,7 @@ export default function CartItem({ item }: CartItemProps) {
           variant="ghost"
           size="icon"
           className="h-8 w-8 text-destructive"
-          onClick={removeItem}
+          onClick={handleRemoveItem}
         >
           <TrashIcon className="h-4 w-4" />
         </Button>

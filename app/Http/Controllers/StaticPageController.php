@@ -69,9 +69,7 @@ class StaticPageController extends Controller
 
     public function trackOrder()
     {
-        return Inertia::render('static/track-order', [
-            'categories' => $this->getCategories()
-        ]);
+        return Inertia::render('static/track-order');
     }
 
     public function terms()
